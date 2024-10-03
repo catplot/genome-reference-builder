@@ -1,0 +1,85 @@
+configfile: "config/config.yaml"
+
+outdir = config["outdir"]
+
+databases = []
+species_list = []
+genomes = []
+releases = []
+
+# Extract database, species, genome, and release information from the config file
+for db, species_config in config["database"].items():
+    for species, details in species_config.items():
+        databases.append(db)
+        species_list.append(species)
+        genomes.append(details["genome"])
+        releases.append(details["release"])
+
+# Include the standardized Snakemake rule files
+include: "rules/fetch_reference_data.smk"  # Fetch reference genome and annotation data
+include: "rules/preprocess_reference_data.smk"  # Preprocess the downloaded reference data
+include: "rules/build_genome_index.smk"  # Build genome index files
+
+index_keys = config["index"].keys()
+
+# Function to get index parameters from config (STAR, Kallisto, Salmon)
+def get_index_params():
+    params = {}
+    if "star" in index_keys:
+        params["sjdbOverhang_values"] = config["index"]["star"]["sjdbOverhang"]
+
+    if "kallisto" in index_keys:
+        kallisto_kmer_size_values = config["index"]["kallisto"]["kmer_size"]
+        params["kallisto_kmer_size_values"] = kallisto_kmer_size_values if isinstance(kallisto_kmer_size_values, list) else [kallisto_kmer_size_values]
+
+    if "salmon" in index_keys:
+        salmon_kmer_size_values = config["index"]["salmon"]["kmer_size"]
+        params["salmon_kmer_size_values"] = salmon_kmer_size_values if isinstance(salmon_kmer_size_values, list) else [salmon_kmer_size_values]
+
+    return params
+
+# Function to generate the final output files based on the config and tool settings
+def get_final_output():
+    final_output = []
+    index_params = get_index_params()
+
+    for database, species, genome, release in zip(databases, species_list, genomes, releases):
+        # Genome sequence and annotation files
+        final_output.extend([
+            f"{outdir}/{database}/{species}/{release}/{genome}.primary_assembly.genome.fa",
+            f"{outdir}/{database}/{species}/{release}/{genome}.v{release}.transcripts.fa",
+            f"{outdir}/{database}/{species}/{release}/{genome}.v{release}.primary_assembly.annotation.gtf",
+            f"{outdir}/{database}/{species}/{release}/{genome}.v{release}.primary_assembly.annotation.gff3",
+            f"{outdir}/{database}/{species}/{release}/{genome}.genome_sizes.txt",
+            f"{outdir}/{database}/{species}/{release}/{genome}.v{release}.primary_assembly.annotation.filtered.gtf",
+            f"{outdir}/{database}/{species}/{release}/{genome}.id_mapping.txt"
+        ])
+
+        # Index files for various tools
+        if "hisat2" in index_keys:
+            final_output.append(f"{outdir}/{database}/{species}/{release}/index/hisat2/{genome}")
+
+        if "cellranger" in index_keys:
+            final_output.append(f"{outdir}/{database}/{species}/{release}/index/cellranger/{genome}")
+
+        if "star" in index_keys:
+            for sjdbOverhang in index_params.get("sjdbOverhang_values", []):
+                final_output.append(f"{outdir}/{database}/{species}/{release}/index/star/{sjdbOverhang}/{genome}")
+
+        if "kallisto" in index_keys:
+            for kallisto_kmer_size in index_params.get("kallisto_kmer_size_values", []):
+                final_output.append(f"{outdir}/{database}/{species}/{release}/index/kallisto/{kallisto_kmer_size}/{genome}.idx")
+
+        if "rsem" in index_keys:
+            final_output.append(f"{outdir}/{database}/{species}/{release}/index/rsem/{genome}.seq")
+
+        if "salmon" in index_keys:
+            for salmon_kmer_size in index_params.get("salmon_kmer_size_values", []):
+                final_output.append(f"{outdir}/{database}/{species}/{release}/index/salmon/{salmon_kmer_size}/{genome}")
+
+    return final_output
+
+# The final rule to define the overall pipeline's output
+rule all:
+    input:
+        get_final_output()

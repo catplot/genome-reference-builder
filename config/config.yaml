@@ -1,0 +1,30 @@
+# Directory to store reference genomes and indexes
+outdir: /datapool/reference_genomes
+
+# Genome and annotation database configuration
+database:
+  gencode:
+    human:
+      genome: GRCh38            # Human genome version
+      release: 46               # Gencode release version for human
+    mouse:
+      genome: GRCm39            # Mouse genome version
+      release: M35              # Gencode release version for mouse
+
+# Index configuration for different tools
+index:
+  star:
+    sjdbOverhang:               # STAR sjdbOverhang values to optimize read length
+      - 100
+      - 149
+  hisat2:                       # HISAT2 index configuration (currently no specific parameters)
+  kallisto:
+    kmer_size: 31               # Kallisto kmer size for index generation
+  salmon:
+    kmer_size: 31               # Salmon kmer size for index generation
+  rsem:                         # RSEM index configuration (default, no specific parameters)
+  cellranger:
+    path: /opt/cellranger/8.0.1/bin/cellranger  # CellRanger executable path
+  # scte:
+
+index_threads: 8                # Number of threads to use for index generation
