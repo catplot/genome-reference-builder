@@ -36,6 +36,7 @@ shell(
     "--fasta={fasta} "
     "--genes={gtf} "
     "--localmem 30 "
+    "--output-dir {output_dir} "
     "--nthreads {snakemake.threads} "
-    "> {log} 2>&1"
+    "{log}"
 )

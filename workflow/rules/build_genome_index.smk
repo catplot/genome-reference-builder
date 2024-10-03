@@ -104,7 +104,7 @@ if "cellranger" in index_keys:
         params:
             cellranger=config["index"]["cellranger"]["path"]  # Path to CellRanger executable
         log:
-            "{outdir}/{database}/{species}/{release}/index/cellranger/{genome}/cellranger_index_{genome}.log"
+            "{outdir}/{database}/{species}/{release}/index/cellranger/cellranger_index_{genome}.log"
         message:
             "Building CellRanger index for {wildcards.species} ({wildcards.release}) using CellRanger."
         script:
