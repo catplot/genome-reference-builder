@@ -1,3 +1,7 @@
+from snakemake.utils import min_version
+# Set minimum snakemake version
+min_version("8.20.5")
+
 configfile: "config/config.yaml"
 
 outdir = config["outdir"]

@@ -25,6 +25,5 @@ index:
   rsem:                         # RSEM index configuration (default, no specific parameters)
   cellranger:
     path: /opt/cellranger/8.0.1/bin/cellranger  # CellRanger executable path
-  # scte:
 
 index_threads: 8                # Number of threads to use for index generation

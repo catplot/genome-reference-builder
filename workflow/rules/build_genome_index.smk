@@ -8,7 +8,7 @@ if "salmon" in index_keys:
         output:
             directory("{outdir}/{database}/{species}/{release}/index/salmon/{salmon_kmer_size}/{genome}")
         log:
-            "{outdir}/{database}/{species}/{release}/index/salmon/{salmon_kmer_size}/salmon_index_{genome}.log"
+            "{outdir}/{database}/{species}/{release}/logs/salmon_index_{genome}_{salmon_kmer_size}.log"
         threads: config["index_threads"]
         params:
             extra=lambda wildcards: f"--kmerLen {wildcards.salmon_kmer_size}"
@@ -28,7 +28,7 @@ if "kallisto" in index_keys:
         params:
             extra=lambda wildcards: f"--kmer-size {wildcards.kallisto_kmer_size}"
         log:
-            "{outdir}/{database}/{species}/{release}/index/kallisto/{kallisto_kmer_size}/kallisto_index_{genome}.log"
+            "{outdir}/{database}/{species}/{release}/logs/kallisto_index_{genome}_{kallisto_kmer_size}.log"
         threads: config["index_threads"]
         conda: "../envs/kallisto.yaml"
         message:
@@ -49,7 +49,7 @@ if "rsem" in index_keys:
         params:
             extra=""
         log:
-            "{outdir}/{database}/{species}/{release}/index/rsem/rsem_index_{genome}.log"
+            "{outdir}/{database}/{species}/{release}/logs/rsem_index_{genome}.log"
         threads: config["index_threads"]
         conda: "../envs/rsem.yaml"
         message:
@@ -64,8 +64,10 @@ if "hisat2" in index_keys:
             fasta="{outdir}/{database}/{species}/{release}/{genome}.primary_assembly.genome.fa"
         output:
             directory("{outdir}/{database}/{species}/{release}/index/hisat2/{genome}")
+        params:
+            prefix = "{outdir}/{database}/{species}/{release}/index/hisat2/{genome}/genome"
         log:
-            "{outdir}/{database}/{species}/{release}/index/hisat2/hisat2_index_{genome}.log"
+            "{outdir}/{database}/{species}/{release}/logs/hisat2_index_{genome}.log"
         threads: config["index_threads"]
         conda: "../envs/hisat2.yaml"
         message:
@@ -86,7 +88,7 @@ if "star" in index_keys:
         params:
             sjdbOverhang=lambda wildcards: wildcards.sjdbOverhang
         log:
-            "{outdir}/{database}/{species}/{release}/index/star/{sjdbOverhang}/{genome}/star_index_{genome}.log"
+            "{outdir}/{database}/{species}/{release}/logs/star_index_{genome}_{sjdbOverhang}.log"
         message:
             "Building STAR index for {wildcards.species} ({wildcards.release}) with sjdbOverhang {wildcards.sjdbOverhang}."
         script:
@@ -104,27 +106,8 @@ if "cellranger" in index_keys:
         params:
             cellranger=config["index"]["cellranger"]["path"]  # Path to CellRanger executable
         log:
-            "{outdir}/{database}/{species}/{release}/index/cellranger/cellranger_index_{genome}.log"
+            "{outdir}/{database}/{species}/{release}/logs/cellranger_index_{genome}.log"
         message:
             "Building CellRanger index for {wildcards.species} ({wildcards.release}) using CellRanger."
         script:
             "../scripts/build_cellranger_index.py"
-
-# RepeatMasker index rule
-if "repeatmasker" in index_keys:
-    rule build_repeatmasker_index:
-        input:
-            fasta="{outdir}/{database}/{species}/{release}/{genome}.primary_assembly.genome.fa"
-        output:
-            directory("{outdir}/{database}/{species}/{release}/index/repeatmasker/{genome}")
-        log:
-            "{outdir}/{database}/{species}/{release}/index/repeatmasker/repeatmasker_{genome}.log"
-        threads: config["index_threads"]
-        conda: "../envs/repeatmasker.yaml"
-        params:
-            species=lambda wildcards: wildcards.species,  # Pass the species from the wildcards
-            extra=""  # Additional RepeatMasker options if needed
-        message:
-            "Building RepeatMasker index for {wildcards.species} ({wildcards.release})."
-        script:
-            "../scripts/build_repeatmasker_index.py"
