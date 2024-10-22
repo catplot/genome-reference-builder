@@ -6,10 +6,10 @@ database:
   gencode:
     human:
       genome: GRCh38            # Human genome version
-      release: 46               # Gencode release version for human
+      release: 47               # Gencode release version for human
     mouse:
       genome: GRCm39            # Mouse genome version
-      release: M35              # Gencode release version for mouse
+      release: M36              # Gencode release version for mouse
 
 # Index configuration for different tools
 index:

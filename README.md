@@ -4,10 +4,10 @@ This README provides detailed instructions for using the **Genome Reference Buil
 
 ## 🌟 Introduction
 
-The Genome Reference Builder pipeline simplifies and automates the creation of genome indices, which are essential for various genomic analyses. This pipeline integrates multiple bioinformatics tools to ensure a smooth and efficient genome indexing process. The pipeline is built around GENCODE annotation data and is currently set to use May 2024 versions:
+The Genome Reference Builder pipeline simplifies and automates the creation of genome indices, which are essential for various genomic analyses. This pipeline integrates multiple bioinformatics tools to ensure a smooth and efficient genome indexing process. The pipeline is built around GENCODE annotation data and is currently set to use October 2024 versions:
 
-- Human: GENCODE Release 46 (GRCh38.p14)
-- Mouse: GENCODE Release M35 (GRCm39)
+- Human: GENCODE Release 47 (GRCh38.p14)
+- Mouse: GENCODE Release M36 (GRCm39)
 
 **⚠️ Note:** These versions will be used for the foreseeable future in all my personal analyses.
 
@@ -29,7 +29,7 @@ Each step is interconnected, ensuring a streamlined and automated process for pr
 Before running the pipeline, ensure that you have installed the following prerequisites:
 
 - Mamba (Mamba or Micromamba distribution)
-- Snakemake (version 8.3.2 or higher)
+- Snakemake (version 8.24.0 or higher)
 
 Additionally, the pipeline relies on specific versions of bioinformatics software:
 
@@ -37,8 +37,8 @@ Additionally, the pipeline relies on specific versions of bioinformatics softwar
 |----------------|-------------|----------------------|
 | **HISAT2**     | 2.2.1       | [31375807](https://pubmed.ncbi.nlm.nih.gov/31375807) |
 | **STAR**       | 2.7.11b     | [23104886](https://pubmed.ncbi.nlm.nih.gov/23104886) |
-| **Kallisto**   | 0.51.0      | [27043002](https://pubmed.ncbi.nlm.nih.gov/27043002) |
-| **Salmon**     | 1.10.1      | [28263959](https://pubmed.ncbi.nlm.nih.gov/28263959) |
+| **Kallisto**   | 0.51.1      | [27043002](https://pubmed.ncbi.nlm.nih.gov/27043002) |
+| **Salmon**     | 1.10.3      | [28263959](https://pubmed.ncbi.nlm.nih.gov/28263959) |
 | **RSEM**       | 1.3.3       | [21816040](https://pubmed.ncbi.nlm.nih.gov/21816040) |
 | **Cell Ranger**| 8.0.1       | [28091601](https://pubmed.ncbi.nlm.nih.gov/28091601) |
 
@@ -53,21 +53,21 @@ The Genome Reference Builder pipeline filters GTF files based on specific gene t
 | **Excluded Tags**    | `readthrough_transcript`                                                                            | Transcripts tagged as readthrough are excluded.             |
 | **Version Suffix**   | Removed from `gene_id`, `transcript_id`, and `exon_id`                                                | Ensures consistency by removing version numbers from IDs.    |
 
-To evaluate the effectiveness of the filtering process, we present a summary of gene counts before and after filtering for both human and mouse GTF files (May 2024 version).
+To evaluate the effectiveness of the filtering process, we present a summary of gene counts before and after filtering for both human and mouse GTF files (October 2024 version).
 
 - Human
 
     | **GTF**    | **Total** | **Protein-coding** | **lncRNA** |
     |--------------|-----------------|--------------------------|------------------|
-    | **Unfiltered** | 61,510          | 20,060                   | 19,230           |
-    | **Filtered**   | 39,014          | 19,422                   | 18,948           |
+    | **Unfiltered** | 77,307          | 20,089                   | 35,045           |
+    | **Filtered**   | 54,907          | 19,446                   | 34,818           |
 
 - Mouse
 
     | **GTF**    | **Total** | **Protein-coding** | **lncRNA** |
     |--------------|-----------------|--------------------------|------------------|
-    | **Unfiltered** | 56,951          | 21,677                   | 11,878          |
-    | **Filtered**   | 33,968          | 21,479                  | 11,794           |
+    | **Unfiltered** | 77,981          | 21,729                   | 32,947          |
+    | **Filtered**   | 55,095          | 21,530                  | 32,873           |
 
 ## 🛠️ Installation
 
@@ -75,7 +75,7 @@ To evaluate the effectiveness of the filtering process, we present a summary of 
    ```bash
    mamba install -c bioconda snakemake
    ```
-2. Clone the pipeline repository from GitLab 🐙:
+2. Clone the pipeline repository from GitHub 🐙:
    ```bash
    git clone git@github.com:catplot/genome-reference-builder.git
    ```
@@ -86,7 +86,7 @@ To evaluate the effectiveness of the filtering process, we present a summary of 
 
 ## ⚙️ Configuration
 
-The pipeline uses a configuration file (`config.yaml`) to specify the reference genomes and indexing tools. This file is included in the repository and is already set up for the **May 2024 GENCODE versions** of human and mouse genomes. No further modifications to the configuration are required unless you want to adjust specific paths or parameters.
+The pipeline uses a configuration file (`config.yaml`) to specify the reference genomes and indexing tools. This file is included in the repository and is already set up for the **October 2024 GENCODE versions** of human and mouse genomes. No further modifications to the configuration are required unless you want to adjust specific paths or parameters.
 
 ## 🚀 Usage
 
@@ -128,11 +128,11 @@ The pipeline generates indexed genome files essential for downstream genomic ana
 /datapool/reference_genomes/
 └── gencode/
     ├── human/
-    │   └── 46/
+    │   └── 47/
     │       ├── GRCh38.primary_assembly.genome.fa
     │       ├── GRCh38.primary_assembly.genome.fa.fai
-    │       ├── GRCh38.v46.transcripts.fa
-    │       ├── GRCh38.v46.primary_assembly.annotation.gtf
+    │       ├── GRCh38.v47.transcripts.fa
+    │       ├── GRCh38.v47.primary_assembly.annotation.gtf
     │       ├── index/
     │       │   ├── star/
     │       │   ├── hisat2/
@@ -141,11 +141,11 @@ The pipeline generates indexed genome files essential for downstream genomic ana
     │       │   ├── rsem/
     │       │   └── cellranger/
     └── mouse/
-        └── M35/
+        └── M36/
             ├── GRCm39.primary_assembly.genome.fa
             ├── GRCm39.primary_assembly.genome.fa.fai
-            ├── GRCm39.vM35.transcripts.fa
-            ├── GRCm39.vM35.primary_assembly.annotation.gtf
+            ├── GRCm39.vM36.transcripts.fa
+            ├── GRCm39.vM36.primary_assembly.annotation.gtf
             ├── index/
             │   ├── star/
             │   ├── hisat2/

@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.0] - 2024-10-22
+
+### Changed
+
+- Updated GENCODE versions:
+  - **Human** genome updated from Release 46 to Release 47 (GRCh38.p14).
+  - **Mouse** genome updated from Release M35 to Release M36 (GRCm39).
+
 ## [1.0.0] - 2024-10-03
 
 ### Added
